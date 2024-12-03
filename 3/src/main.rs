@@ -1,20 +1,19 @@
 use std::{fs::File, io::Read};
-fn sol1() -> Result<(), anyhow::Error> {
+fn sol1() -> Result<i32, anyhow::Error> {
     // Read file from AOC
     let mut contents = String::new();
     File::open("./input")?.read_to_string(&mut contents)?;
 
     let re = regex::Regex::new(r"mul\(([0-9]+),([0-9]+)\)")?;
-    let total_sum = re
-        .captures_iter(&contents)
-        .map(|capture| capture.extract())
-        .map(|(_, [num0, num1])| num0.parse::<i32>().unwrap() * num1.parse::<i32>().unwrap())
-        .sum::<i32>();
-    println!("{total_sum}");
-    Ok(())
+    let numbers = re.captures_iter(&contents).map(|capture| capture.extract());
+    let mut total_sum = 0;
+    for (_, [num0, num1]) in numbers {
+        total_sum += num0.parse::<i32>()? * num1.parse::<i32>()?;
+    }
+    Ok(total_sum)
 }
 
-fn sol2() -> Result<(), anyhow::Error> {
+fn sol2() -> Result<i32, anyhow::Error> {
     // Read file from AOC
     let mut contents = String::new();
     File::open("./input")?.read_to_string(&mut contents)?;
@@ -30,17 +29,16 @@ fn sol2() -> Result<(), anyhow::Error> {
             "don't()" => mul_enabled = false,
             "mul" => {
                 if mul_enabled {
-                    total_sum += num0.parse::<i32>().unwrap() * num1.parse::<i32>().unwrap();
+                    total_sum += num0.parse::<i32>()? * num1.parse::<i32>()?;
                 }
             }
             _ => panic!("Should never reach here"),
         }
     }
-    println!("{total_sum}");
-    Ok(())
+    Ok(total_sum)
 }
 fn main() -> Result<(), anyhow::Error> {
-    sol1()?;
-    sol2()?;
+    println!("{}", sol1()?);
+    println!("{}", sol2()?);
     Ok(())
 }
